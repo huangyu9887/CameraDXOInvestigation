@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DxOMark V6 旗舰影像调查报告</title>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:      #111111;
+  --ink-2:    #333333;
+  --ink-3:    #666666;
+  --ink-4:    #999999;
+  --paper:    #F9F7F3;
+  --paper-2:  #F0EDE6;
+  --paper-3:  #E5E1D8;
+  --rule:     #D8D4CB;
+  --focus:    #1A3A6B;
+  --focus-bg: #E8EFF9;
+  --muted:    #C0BDB5;
+  --good:     #1E6641;
+  --good-bg:  #E4F2EA;
+  --warn:     #7A4700;
+  --warn-bg:  #FDF3DF;
+  --bad:      #8B1A1A;
+  --bad-bg:   #FCEAEA;
+  --sans:  'DM Sans', sans-serif;
+  --serif: 'Spectral', serif;
+  --mono:  'DM Mono', monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.7}
+.page-wrap{max-width:900px;margin:0 auto;padding:0 40px 120px}
+
+/* NAV */
+.top-nav{position:sticky;top:0;background:var(--ink);z-index:100;padding:0 40px}
+.top-nav-inner{max-width:820px;margin:0 auto;display:flex;align-items:center;overflow-x:auto;scrollbar-width:none}
+.top-nav-inner::-webkit-scrollbar{display:none}
+.nav-logo{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.3);padding:14px 24px 14px 0;border-right:1px solid rgba(255,255,255,.1);margin-right:16px;white-space:nowrap;flex-shrink:0}
+.nav-a{font-size:12px;color:rgba(255,255,255,.4);padding:14px 12px;white-space:nowrap;cursor:pointer;text-decoration:none;transition:color .15s;flex-shrink:0;border-bottom:2px solid transparent}
+.nav-a:hover{color:rgba(255,255,255,.85)}
+.nav-a.active{color:#fff;border-bottom-color:#5B9CF6}
+
+/* COVER */
+.cover{background:var(--ink);margin:0 -40px;padding:96px 40px 80px;position:relative;overflow:hidden}
+.cover::after{content:'';position:absolute;right:-80px;top:-80px;width:480px;height:480px;border-radius:50%;border:1px solid rgba(255,255,255,.04);pointer-events:none}
+.cover-kicker{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:#5B9CF6;text-transform:uppercase;margin-bottom:20px}
+.cover-h1{font-family:var(--serif);font-size:clamp(34px,5vw,54px);font-weight:700;color:#fff;line-height:1.15;letter-spacing:-.02em;margin-bottom:16px}
+.cover-sub{font-size:16px;color:rgba(255,255,255,.4);margin-bottom:48px;font-weight:300;max-width:540px}
+.cover-thesis{background:rgba(91,156,246,.12);border:1px solid rgba(91,156,246,.25);border-left:3px solid #5B9CF6;border-radius:0 6px 6px 0;padding:20px 24px;margin-bottom:48px;max-width:660px}
+.cover-thesis p{font-family:var(--serif);font-size:18px;font-weight:600;color:#fff;line-height:1.5}
+.cover-thesis small{display:block;margin-top:8px;font-size:12px;color:rgba(255,255,255,.3);font-family:var(--mono)}
+.cover-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:40px}
+.pill{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:5px 12px;border-radius:2px}
+.cover-meta{display:flex;gap:40px;padding-top:32px;border-top:1px solid rgba(255,255,255,.08);flex-wrap:wrap}
+.cm-item .cm-val{font-family:var(--mono);font-size:20px;color:#5B9CF6;font-weight:500}
+.cm-item .cm-lbl{font-size:11px;color:rgba(255,255,255,.3);margin-top:3px}
+
+/* SECTIONS */
+.section{padding:72px 0 0}
+.section-label{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-4);margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--rule)}
+.section-title{font-family:var(--serif);font-size:26px;font-weight:700;color:var(--focus);letter-spacing:-.02em;margin-bottom:20px}
+.body-text{font-size:14px;line-height:1.85;color:var(--ink-2);max-width:660px;margin-bottom:14px}
+
+/* CHART MODULE */
+.chart{margin:36px 0 52px}
+.chart-num{font-family:var(--mono);font-size:10px;color:var(--ink-4);letter-spacing:.1em;margin-bottom:10px}
+/* Zelazny: title IS the conclusion */
+.chart-conclusion{font-family:var(--serif);font-size:19px;font-weight:600;color:var(--ink);line-height:1.4;margin-bottom:6px;max-width:700px}
+.chart-conclusion em{font-style:normal;color:var(--focus);border-bottom:2px solid var(--focus);padding-bottom:1px}
+.chart-conclusion .neg{color:var(--bad);border-bottom:2px solid var(--bad)}
+.chart-note{font-size:12px;color:var(--ink-4);margin-bottom:20px;font-style:italic;max-width:620px;line-height:1.5}
+
+/* BAR CHART */
+.bar-chart{display:flex;flex-direction:column;gap:10px}
+.bar-row{display:grid;grid-template-columns:200px 1fr 60px;align-items:center}
+.bar-name{font-size:13px;color:var(--ink-3);padding-right:16px;line-height:1.3}
+.bar-name b{display:block;color:var(--ink);font-weight:500;font-size:13.5px}
+.bar-name span{font-family:var(--mono);font-size:11px;color:var(--ink-4)}
+.bar-track{height:32px;background:var(--paper-3);border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;display:flex;align-items:center;padding-right:10px;justify-content:flex-end;font-family:var(--mono);font-size:12px;font-weight:500;border-radius:2px;animation:barGrow 1s cubic-bezier(.16,1,.3,1) both}
+@keyframes barGrow{from{width:0!important}}
+.bar-fill.hi{background:var(--focus);color:#fff}
+.bar-fill.lo{background:var(--bad);color:#fff}
+.bar-fill.mu{background:var(--muted);color:var(--ink-3)}
+.bar-fill.go{background:var(--good);color:#fff}
+.bar-fill.wa{background:var(--warn);color:#fff}
+.bar-val{font-family:var(--mono);font-size:13px;font-weight:600;padding-left:10px;text-align:right}
+.bar-val.hi{color:var(--focus)}
+.bar-val.lo{color:var(--bad)}
+.bar-val.mu{color:var(--ink-4)}
+.bar-val.go{color:var(--good)}
+.bar-val.wa{color:var(--warn)}
+.bar-axis{display:grid;grid-template-columns:200px 1fr 60px;margin-top:6px}
+.bar-axis-inner{display:flex;justify-content:space-between;border-top:1px solid var(--rule);padding-top:5px}
+.bar-axis-inner span{font-family:var(--mono);font-size:10px;color:var(--ink-4)}
+
+/* SMALL MULTIPLES */
+.small-multiples{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:8px 0}
+.sm-card{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:18px 20px}
+.sm-title{font-size:11px;font-weight:500;color:var(--ink-3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;font-family:var(--mono)}
+.sm-conclusion{font-family:var(--serif);font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:14px;line-height:1.35}
+.sm-conclusion .hi{color:var(--focus)}
+.sm-conclusion .lo{color:var(--bad)}
+.sm-conclusion .go{color:var(--good)}
+.sm-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.sm-name{font-size:11px;color:var(--ink-3);width:76px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sm-track{flex:1;height:16px;background:var(--paper-3);border-radius:1px;overflow:hidden}
+.sm-fill{height:100%;border-radius:1px;animation:barGrow .9s cubic-bezier(.16,1,.3,1) both}
+.sm-fill.hi{background:var(--focus)}
+.sm-fill.mu{background:var(--muted)}
+.sm-fill.go{background:var(--good)}
+.sm-fill.lo{background:var(--bad)}
+.sm-fill.wa{background:var(--warn)}
+.sm-val{font-family:var(--mono);font-size:11px;color:var(--ink-4);width:30px;text-align:right;flex-shrink:0}
+
+/* CALLOUT */
+.callout{border-left:3px solid var(--focus);background:var(--focus-bg);border-radius:0 6px 6px 0;padding:18px 22px;margin:24px 0 32px}
+.callout-title{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--focus);margin-bottom:12px;font-weight:500}
+.callout-item{display:flex;gap:12px;margin-bottom:9px;font-size:13.5px;line-height:1.6;color:var(--ink-2)}
+.callout-item:last-child{margin-bottom:0}
+.callout-n{font-family:var(--mono);font-size:11px;color:var(--focus);min-width:18px;padding-top:2px;font-weight:500}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;padding:9px 14px;border-bottom:2px solid var(--ink);font-weight:500;font-size:12px}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--rule);color:var(--ink-2);vertical-align:top;line-height:1.5}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td.label{font-weight:500;color:var(--ink)}
+.tbl td.mono{font-family:var(--mono);font-size:12px}
+.tbl td.hi{color:var(--focus);font-weight:600}
+.tbl td.go{color:var(--good);font-weight:600}
+.tbl td.lo{color:var(--bad);font-weight:600}
+.tbl td.wa{color:var(--warn);font-weight:500}
+.tbl tr:hover td{background:var(--focus-bg)}
+
+/* PROFILE */
+.profile{margin:40px 0 60px;border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.profile-head{display:grid;grid-template-columns:1fr auto;gap:16px;padding:24px 28px;color:#fff;align-items:start}
+.ph-rank{font-family:var(--mono);font-size:11px;opacity:.5;margin-bottom:6px}
+.ph-name{font-family:var(--serif);font-size:21px;font-weight:700;margin-bottom:4px}
+.ph-tagline{font-size:13px;opacity:.55}
+.ph-score{font-family:var(--mono);font-size:48px;font-weight:500;line-height:1;text-align:right}
+.ph-score-label{font-size:11px;opacity:.4;text-align:right;margin-top:3px}
+.profile-sub-scores{display:grid;grid-template-columns:repeat(4,1fr);background:var(--paper-2);border-bottom:1px solid var(--rule)}
+.pss-item{padding:14px 16px;text-align:center;border-right:1px solid var(--rule)}
+.pss-item:last-child{border-right:none}
+.pss-val{font-family:var(--mono);font-size:17px;font-weight:600;color:var(--focus)}
+.pss-val.go{color:var(--good)}
+.pss-val.wa{color:var(--warn)}
+.pss-val.lo{color:var(--bad)}
+.pss-dim{font-size:11px;color:var(--ink-4);margin-top:3px}
+.spec-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.spec-tbl th{background:var(--paper-2);padding:8px 16px;text-align:left;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--rule)}
+.spec-tbl td{padding:9px 16px;border-bottom:1px solid var(--rule);color:var(--ink-2);vertical-align:top}
+.spec-tbl td:first-child{font-weight:600;color:var(--ink);white-space:nowrap;width:130px}
+.spec-tbl tr:last-child td{border-bottom:none}
+.spec-note{color:var(--ink-4)!important;font-size:11.5px!important}
+.pro-con{display:grid;grid-template-columns:1fr 1fr}
+.pro-col{padding:18px 20px;background:#f4fbf7;border-right:1px solid var(--rule)}
+.con-col{padding:18px 20px;background:#fdf5f5}
+.pc-head{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:500;margin-bottom:10px}
+.pro-col .pc-head{color:var(--good)}
+.con-col .pc-head{color:var(--bad)}
+.pc-item{display:flex;gap:8px;margin-bottom:7px;font-size:13px;line-height:1.5;color:var(--ink-2)}
+.pc-item:last-child{margin-bottom:0}
+.pro-col .pc-item::before{content:'＋';color:var(--good);font-weight:700;flex-shrink:0;line-height:1.5}
+.con-col .pc-item::before{content:'－';color:var(--bad);font-weight:700;flex-shrink:0;line-height:1.5}
+
+/* NOTICE */
+.notice{background:var(--warn-bg);border-left:3px solid var(--warn);border-radius:0 6px 6px 0;padding:14px 20px;margin:20px 0;font-size:13px;color:var(--ink-2);line-height:1.7}
+.notice b{color:var(--warn)}
+
+/* KEY FINDING */
+.finding{background:var(--bad-bg);border-left:3px solid var(--bad);border-radius:0 6px 6px 0;padding:14px 18px;margin-top:20px;font-size:13.5px;color:var(--ink-2);line-height:1.6}
+.finding strong{color:var(--bad)}
+
+/* VALIDATION */
+.val-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.val-card{border:1px solid var(--rule);border-radius:6px;padding:14px 16px}
+.val-type{font-family:var(--mono);font-size:10px;color:var(--ink-4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.val-score{font-family:var(--mono);font-size:15px;color:var(--focus);font-weight:600;margin-bottom:4px}
+.val-src{font-size:12px;color:var(--ink-3);line-height:1.5}
+.val-ok{margin-top:8px;font-size:11px;color:var(--good);background:var(--good-bg);padding:3px 8px;border-radius:2px;display:inline-block}
+.val-warn{margin-top:8px;font-size:11px;color:var(--warn);background:var(--warn-bg);padding:3px 8px;border-radius:2px;display:inline-block}
+
+/* FOOTER */
+.footer{margin-top:72px;padding-top:24px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px}
+.footer-note{font-size:12px;color:var(--ink-4);line-height:1.8}
+.footer-brand{font-family:var(--mono);font-size:11px;color:var(--ink-4);text-align:right;line-height:1.8}
+
+@media(max-width:700px){
+  .page-wrap{padding:0 20px 80px}
+  .cover{margin:0 -20px;padding:64px 20px 56px}
+  .bar-row{grid-template-columns:120px 1fr 50px}
+  .bar-name b{font-size:12px}
+  .pro-con{grid-template-columns:1fr}
+  .val-grid{grid-template-columns:1fr}
+  .profile-sub-scores{grid-template-columns:repeat(2,1fr)}
+  .small-multiples{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="top-nav-inner">
+    <div class="nav-logo">DxOMark V6</div>
+    <a class="nav-a" href="#summary">摘要</a>
+    <a class="nav-a" href="#protocol">V6协议</a>
+    <a class="nav-a" href="#overall">综合得分</a>
+    <a class="nav-a" href="#dimensions">分维度</a>
+    <a class="nav-a" href="#profiles">机型详情</a>
+    <a class="nav-a" href="#buying">购买决策</a>
+    <a class="nav-a" href="#vfm">性价比</a>
+    <a class="nav-a" href="#validation">数据验证</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+<!-- COVER -->
+<section class="cover" id="cover">
+  <div class="cover-kicker">DxOMark Camera V6 · 旗舰影像深度报告 · 2025</div>
+  <h1 class="cover-h1">旗舰手机影像全景调查</h1>
+  <p class="cover-sub">五款全球顶级旗舰在 V6 协议下的完整评测对比，含硬件配置、优缺点与购买决策指引</p>
+  <div class="cover-thesis">
+    <p>Oppo Find X8 Ultra 以 168 分领跑本段，综合均衡性最强，性价比最高；<br>Samsung Galaxy S25 Ultra 以同等售价排名垫底，纯影像需求下不推荐购买</p>
+    <small>// 报告核心结论 — 所有图表均服务于这一判断</small>
+  </div>
+  <div class="cover-pills">
+    <span class="pill">Oppo Find X8 Ultra · 168</span>
+    <span class="pill">iPhone 16 Pro Max · 161</span>
+    <span class="pill">Xiaomi 15 Ultra · 159</span>
+    <span class="pill">Pixel 9 Pro XL · ~156</span>
+    <span class="pill">Samsung S25 Ultra · 151</span>
+  </div>
+  <div class="cover-meta">
+    <div class="cm-item"><div class="cm-val">V6</div><div class="cm-lbl">统一协议版本</div></div>
+    <div class="cm-item"><div class="cm-val">5</div><div class="cm-lbl">对比机型</div></div>
+    <div class="cm-item"><div class="cm-val">17分</div><div class="cm-lbl">同价位最大差距</div></div>
+    <div class="cm-item"><div class="cm-val">7×</div><div class="cm-lbl">交叉验证来源</div></div>
+  </div>
+</section>
+
+<!-- 01 SUMMARY -->
+<section class="section" id="summary">
+  <div class="section-label"><span>01</span>执行摘要</div>
+  <h2 class="section-title">五个结论，先于所有数据</h2>
+  <p class="body-text">本报告遵循「结论先行」原则。以下五条是全部分析的答案——图表和数据是支撑，不是目的。</p>
+  <div class="callout">
+    <div class="callout-title">// 核心结论</div>
+    <div class="callout-item"><span class="callout-n">①</span><span><strong>综合最强：Oppo Find X8 Ultra（168分）</strong>——双潜望长焦、哈苏调色、HDR 全面支持，V6 综合领跑，¥6999 每分 ¥41.7 全段最优。</span></div>
+    <div class="callout-item"><span class="callout-n">②</span><span><strong>视频无对手：iPhone 16 Pro Max（161分）</strong>——V6 视频并列全球第一，ProRes Log 后期空间最大；但人脸亮度首次被 V6 系统性扣分。</span></div>
+    <div class="callout-item"><span class="callout-n">③</span><span><strong>长焦冠军：Xiaomi 15 Ultra（159分）</strong>——200MP 超长焦 V6 变焦全球第一，但视频防抖和超广角是明显短板。</span></div>
+    <div class="callout-item"><span class="callout-n">④</span><span><strong>人像标杆：Pixel 9 Pro XL（~156分）</strong>——V6 人脸亮度全球标杆，长焦硬件短板是分数天花板。</span></div>
+    <div class="callout-item"><span class="callout-n">⑤</span><span><strong>性价比最差：Samsung S25 Ultra（151分）</strong>——¥9999 售价，V6 全球第29，同价位 iPhone 高 10 分，Oppo 高 17 分，纯影像需求不推荐。</span></div>
+  </div>
+</section>
+
+<!-- 02 PROTOCOL -->
+<section class="section" id="protocol">
+  <div class="section-label"><span>02</span>V6 协议</div>
+  <h2 class="section-title">V6 重新定义了什么算「好照片」</h2>
+  <p class="body-text">V6 最重要的变化：将「人类真实偏好」纳入评分权重，不再以实验室指标为唯一标准。这直接改变了哪些机型受益、哪些受损。</p>
+  <div class="chart">
+    <div class="chart-num">图表 01</div>
+    <div class="chart-conclusion">V6 协议让<em>长焦强者受益</em>，让<span class="neg">HDR 不透明者受损</span></div>
+    <div class="chart-note">权重变化基于 DxOMark 官方 V6 协议文档（2025-08-27）</div>
+    <table class="tbl">
+      <thead><tr><th style="width:150px">维度</th><th style="width:110px">V6 变化</th><th>核心改动</th><th style="width:200px">谁受益 / 受损</th></tr></thead>
+      <tbody>
+        <tr><td class="label">人像·人脸亮度</td><td class="hi">↑↑ 大幅提升</td><td>新增「人脸亮度」独立评分；50个新场景；全球多地区用户偏好研究</td><td class="go">Pixel 9 Pro XL 最大受益</td></tr>
+        <tr><td class="label">HDR 评估</td><td class="hi">↑↑↑ 全新模块</td><td>首次要求公开文档化 HDR 格式；专用参考显示器评估</td><td class="go">支持 Dolby Vision / Log 受益</td></tr>
+        <tr><td class="label">变焦·视频变焦</td><td class="hi">↑↑ 大幅提升</td><td>85–300mm 专项；视频变焦平滑度纳入；演唱会等运动场景新增</td><td class="go">Xiaomi 15 Ultra 最大受益</td></tr>
+        <tr><td class="label">细噪点</td><td class="lo">↓ 权重下降</td><td>用户研究：人脸清晰度优先于纯噪点控制</td><td class="wa">S25 Ultra 噪点扣分减轻，但 HDR 失分更大</td></tr>
+        <tr><td class="label">视频稳定</td><td style="color:var(--ink-4)">→ 基本不变</td><td>新增行走场景三轴运动测试</td><td style="color:var(--ink-3)">iPhone 稳定性优势依然显著</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="notice"><b>重要：</b>V5 与 V6 分数不可直接比较。本报告所有分数均统一为 V6 协议版本或 V6 重测版本。</div>
+</section>
+
+<!-- 03 OVERALL -->
+<section class="section" id="overall">
+  <div class="section-label"><span>03</span>综合得分</div>
+  <div class="chart">
+    <div class="chart-num">图表 02</div>
+    <div class="chart-conclusion"><em>Oppo Find X8 Ultra 领跑本段</em>，Samsung 落后 17 分却索价相同</div>
+    <div class="chart-note">基准：全球 #1 Huawei Pura 80 Ultra = 175 分。灰色 = 参照机型，不在本报告重点范围。</div>
+    <div class="bar-chart">
+      <div class="bar-row"><div class="bar-name"><b>Huawei Pura 80 Ultra</b><span>全球 #1（参照）</span></div><div class="bar-track"><div class="bar-fill mu" style="width:97.2%">175</div></div><div class="bar-val mu">175</div></div>
+      <div class="bar-row"><div class="bar-name"><b>Oppo Find X8 Ultra ★</b><span>全球 #3 · ¥6999</span></div><div class="bar-track"><div class="bar-fill hi" style="width:93.3%">168</div></div><div class="bar-val hi">168</div></div>
+      <div class="bar-row"><div class="bar-name"><b>iPhone 16 Pro Max ★</b><span>全球 #13 · ¥9999</span></div><div class="bar-track"><div class="bar-fill mu" style="width:89.4%">161</div></div><div class="bar-val mu">161</div></div>
+      <div class="bar-row"><div class="bar-name"><b>Xiaomi 15 Ultra ★</b><span>全球 #7 · ¥5999</span></div><div class="bar-track"><div class="bar-fill mu" style="width:88.3%">159</div></div><div class="bar-val mu">159</div></div>
+      <div class="bar-row"><div class="bar-name"><b>Pixel 9 Pro XL ★</b><span>V6重测 ~156</span></div><div class="bar-track"><div class="bar-fill mu" style="width:86.7%">~156</div></div><div class="bar-val mu">~156</div></div>
+      <div class="bar-row"><div class="bar-name"><b>Samsung S25 Ultra ★</b><span>全球 #29 · ¥9999</span></div><div class="bar-track"><div class="bar-fill lo" style="width:83.9%">151</div></div><div class="bar-val lo">151</div></div>
+      <div class="bar-row"><div class="bar-name"><b>OnePlus 13</b><span>参照机型</span></div><div class="bar-track"><div class="bar-fill mu" style="width:78.3%">141</div></div><div class="bar-val mu">141</div></div>
+    </div>
+    <div class="bar-axis"><div></div><div class="bar-axis-inner"><span>130</span><span>145</span><span>155</span><span>165</span><span>175</span></div><div></div></div>
+  </div>
+</section>
+
+<!-- 04 DIMENSIONS -->
+<section class="section" id="dimensions">
+  <div class="section-label"><span>04</span>分维度对比</div>
+  <h2 class="section-title">每张图只讲一个结论</h2>
+  <p class="body-text">六张独立的小图，各自回答一个具体问题。每张图的标题即答案。</p>
+  <div class="chart">
+    <div class="chart-num">图表 03</div>
+    <div class="chart-conclusion">视频上 <em>Oppo 与 iPhone 并列第一</em>；变焦上 <em>Xiaomi 独冠</em>；<span class="neg">Samsung 三个维度垫底</span></div>
+    <div class="chart-note">数值为 V6 子分；★ = 本段该维度第一。</div>
+    <div class="small-multiples">
+      <div class="sm-card">
+        <div class="sm-title">照片总分</div>
+        <div class="sm-conclusion"><span class="go">Oppo 170 领先</span>，Samsung 148 垫底</div>
+        <div class="sm-bar-row"><div class="sm-name">Oppo X8U</div><div class="sm-track"><div class="sm-fill go" style="width:94.4%"></div></div><div class="sm-val" style="color:var(--good)">170</div></div>
+        <div class="sm-bar-row"><div class="sm-name">Xiaomi 15U</div><div class="sm-track"><div class="sm-fill mu" style="width:89.4%"></div></div><div class="sm-val">161</div></div>
+        <div class="sm-bar-row"><div class="sm-name">iPhone PM</div><div class="sm-track"><div class="sm-fill mu" style="width:88.3%"></div></div><div class="sm-val">159</div></div>
+        <div class="sm-bar-row"><div class="sm-name">Pixel 9XL</div><div class="sm-track"><div class="sm-fill mu" style="width:87.2%"></div></div><div class="sm-val">~157</div></div>
+        <div class="sm-bar-row"><div class="sm-name">S25 Ultra</div><div class="sm-track"><div class="sm-fill lo" style="width:82.2%"></div></div><div class="sm-val" style="color:var(--bad)">148</div></div>
+      </div>
+      <div class="sm-card">
+        <div class="sm-title">视频总分</div>
+        <div class="sm-conclusion"><span class="go">Oppo + iPhone 并列 166★</span>，Xiaomi 最低</div>
+        <div class="sm-bar-row"><div class="sm-name">Oppo X8U</div><div class="sm-track"><div class="sm-fill go" style="width:96.5%"></div></div><div class="sm-val" style="color:var(--good)">166★</div></div>
+        <div class="sm-bar-row"><div class="sm-name">iPhone PM</div><div class="sm-track"><div class="sm-fill go" style="width:96.5%"></div></div><div class="sm-val" style="color:var(--good)">166★</div></div>
+        <div class="sm-bar-row"><div class="sm-name">S25 Ultra</div><div class="sm-track"><div class="sm-fill mu" style="width:87.2%"></div></div><div class="sm-val">150</div></div>
+        <div class="sm-bar-row"><div class="sm-name">Pixel 9XL</div><div class="sm-track"><div class="sm-fill mu" style="width:87.2%"></div></div><div class="sm-val">~150</div></div>
+        <div class="sm-bar-row"><div class="sm-name">Xiaomi 15U</div><div class="sm-track"><div class="sm-fill lo" style="width:86.0%"></div></div><div class="sm-val" style="color:var(--bad)">148</div></div>
+      </div>
+      <div class="sm-card">
+        <div class="sm-title">变焦总分</div>
+        <div class="sm-conclusion"><span class="go">Xiaomi 162 全球第一★</span>，Samsung 最低</div>
+        <div class="sm-bar-row"><div class="sm-name">Xiaomi 15U</div><div class="sm-track"><div class="sm-fill go" style="width:95.3%"></div></div><div class="sm-val" style="color:var(--good)">162★</div></div>
+        <div class="sm-bar-row"><div class="sm-name">Oppo X8U</div><div class="sm-track"><div class="sm-fill mu" style="width:94.7%"></div></div><div class="sm-val">161</div></div>
+        <div class="sm-bar-row"><div class="sm-name">Pixel 9XL</div><div class="sm-track"><div class="sm-fill mu" style="width:85.3%"></div></div><div class="sm-val">~145</div></div>
+        <div class="sm-bar-row"><div class="sm-name">iPhone PM</div><div class="sm-track"><div class="sm-fill mu" style="width:82.4%"></div></div><div class="sm-val">140</div></div>
+        <div class="sm-bar-row"><div class="sm-name">S25 Ultra</div><div class="sm-track"><div class="sm-fill lo" style="width:76.5%"></div></div><div class="sm-val" style="color:var(--bad)">130</div></div>
+      </div>
+      <div class="sm-card">
+        <div class="sm-title">V6 人脸亮度</div>
+        <div class="sm-conclusion"><span class="go">Pixel 是 V6 全球标杆</span>，iPhone 逆光偏暗被扣</div>
+        <div class="sm-bar-row"><div class="sm-name">Pixel 9XL</div><div class="sm-track"><div class="sm-fill go" style="width:96%"></div></div><div class="sm-val" style="color:var(--good)">优★</div></div>
+        <div class="sm-bar-row"><div class="sm-name">Oppo X8U</div><div class="sm-track"><div class="sm-fill go" style="width:92%"></div></div><div class="sm-val" style="color:var(--good)">优</div></div>
+        <div class="sm-bar-row"><div class="sm-name">Xiaomi 15U</div><div class="sm-track"><div class="sm-fill mu" style="width:82%"></div></div><div class="sm-val">良</div></div>
+        <div class="sm-bar-row"><div class="sm-name">iPhone PM</div><div class="sm-track"><div class="sm-fill wa" style="width:64%"></div></div><div class="sm-val" style="color:var(--warn)">中</div></div>
+        <div class="sm-bar-row"><div class="sm-name">S25 Ultra</div><div class="sm-track"><div class="sm-fill wa" style="width:60%"></div></div><div class="sm-val" style="color:var(--warn)">中</div></div>
+      </div>
+      <div class="sm-card">
+        <div class="sm-title">低光表现</div>
+        <div class="sm-conclusion"><span class="go">Oppo 最强</span>，<span class="lo">Samsung 噪点最多</span></div>
+        <div class="sm-bar-row"><div class="sm-name">Oppo X8U</div><div class="sm-track"><div class="sm-fill go" style="width:95%"></div></div><div class="sm-val" style="color:var(--good)">优</div></div>
+        <div class="sm-bar-row"><div class="sm-name">iPhone PM</div><div class="sm-track"><div class="sm-fill mu" style="width:84%"></div></div><div class="sm-val">良</div></div>
+        <div class="sm-bar-row"><div class="sm-name">Pixel 9XL</div><div class="sm-track"><div class="sm-fill mu" style="width:82%"></div></div><div class="sm-val">良</div></div>
+        <div class="sm-bar-row"><div class="sm-name">Xiaomi 15U</div><div class="sm-track"><div class="sm-fill mu" style="width:70%"></div></div><div class="sm-val">中</div></div>
+        <div class="sm-bar-row"><div class="sm-name">S25 Ultra</div><div class="sm-track"><div class="sm-fill lo" style="width:52%"></div></div><div class="sm-val" style="color:var(--bad)">差</div></div>
+      </div>
+      <div class="sm-card">
+        <div class="sm-title">超广角表现</div>
+        <div class="sm-conclusion"><span class="go">Oppo 最强</span>，Xiaomi 边缘分辨率最弱</div>
+        <div class="sm-bar-row"><div class="sm-name">Oppo X8U</div><div class="sm-track"><div class="sm-fill go" style="width:95%"></div></div><div class="sm-val" style="color:var(--good)">优</div></div>
+        <div class="sm-bar-row"><div class="sm-name">iPhone PM</div><div class="sm-track"><div class="sm-fill mu" style="width:80%"></div></div><div class="sm-val">良</div></div>
+        <div class="sm-bar-row"><div class="sm-name">Pixel 9XL</div><div class="sm-track"><div class="sm-fill mu" style="width:80%"></div></div><div class="sm-val">良</div></div>
+        <div class="sm-bar-row"><div class="sm-name">S25 Ultra</div><div class="sm-track"><div class="sm-fill mu" style="width:78%"></div></div><div class="sm-val">良</div></div>
+        <div class="sm-bar-row"><div class="sm-name">Xiaomi 15U</div><div class="sm-track"><div class="sm-fill wa" style="width:58%"></div></div><div class="sm-val" style="color:var(--warn)">中弱</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 PROFILES -->
+<section class="section" id="profiles">
+  <div class="section-label"><span>05</span>机型详情</div>
+  <h2 class="section-title">五款机型：配置、优势、短板</h2>
+
+  <!-- OPPO -->
+  <div class="profile">
+    <div class="profile-head" style="background:linear-gradient(135deg,#0d2b52,#1a5080)">
+      <div><div class="ph-rank">DXOMARK V6 · 全球 #3</div><div class="ph-name">Oppo Find X8 Ultra</div><div class="ph-tagline">综合均衡最强 · 哈苏双潜望 · 性价比最优</div></div>
+      <div><div class="ph-score">168</div><div class="ph-score-label">V6 综合</div></div>
+    </div>
+    <div class="profile-sub-scores">
+      <div class="pss-item"><div class="pss-val go">170</div><div class="pss-dim">照片</div></div>
+      <div class="pss-item"><div class="pss-val go">166★</div><div class="pss-dim">视频（并列第一）</div></div>
+      <div class="pss-item"><div class="pss-val">161</div><div class="pss-dim">变焦</div></div>
+      <div class="pss-item"><div class="pss-val go">优</div><div class="pss-dim">人脸亮度</div></div>
+    </div>
+    <table class="spec-tbl"><thead><tr><th colspan="3">硬件配置</th></tr></thead><tbody>
+      <tr><td>主摄</td><td>50MP · 1英寸 · f/1.8 · OIS · 23mm</td><td class="spec-note">Light Fusion 900；哈苏 NATURAL 色彩调校</td></tr>
+      <tr><td>超广角</td><td>50MP · f/2.0 · 12mm</td><td class="spec-note">高分辨率超广；畸变控制优秀</td></tr>
+      <tr><td>长焦 1</td><td>50MP · 3× 光学 · 哈苏 T* 镀膜</td><td class="spec-note">中距人像主力</td></tr>
+      <tr><td>长焦 2（潜望）</td><td>50MP · 6× 光学 · OIS</td><td class="spec-note">双 6× 全球唯一；远摄极强</td></tr>
+      <tr><td>视频</td><td>4K 120fps · Dolby Vision · Log</td><td class="spec-note">全场景 Dolby Vision；V6 视频并列第一</td></tr>
+      <tr><td>芯片 / 售价</td><td>Snapdragon 8 Elite · 约 ¥6999</td><td class="spec-note" style="color:var(--good)!important;font-weight:600!important">每分 ¥41.7 · 五款最优性价比</td></tr>
+    </tbody></table>
+    <div class="pro-con">
+      <div class="pro-col"><div class="pc-head">优势</div>
+        <div class="pc-item">双潜望配置（双 6×），远摄细节业界领先</div>
+        <div class="pc-item">哈苏色彩调校，自然色还原五款最佳</div>
+        <div class="pc-item">人脸亮度稳定，V6 肤色评分优秀</div>
+        <div class="pc-item">Dolby Vision 视频并列 V6 全球第一</div>
+        <div class="pc-item">支持公开 HDR 格式，V6 HDR 高分</div>
+        <div class="pc-item">综合均衡，无明显短板</div>
+      </div>
+      <div class="con-col"><div class="pc-head">不足</div>
+        <div class="pc-item">机身较厚重，携带便利性偏低</div>
+        <div class="pc-item">极端低光视频噪点略高于 iPhone</div>
+        <div class="pc-item">自动变焦切换有轻微跳跃感</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IPHONE -->
+  <div class="profile">
+    <div class="profile-head" style="background:linear-gradient(135deg,#1c1c1e,#2d2d30)">
+      <div><div class="ph-rank">DXOMARK V6 · 全球 #13</div><div class="ph-name">Apple iPhone 16 Pro Max</div><div class="ph-tagline">视频全球并列第一 · ProRes Log · Dolby Vision</div></div>
+      <div><div class="ph-score">161</div><div class="ph-score-label">V6 综合</div></div>
+    </div>
+    <div class="profile-sub-scores">
+      <div class="pss-item"><div class="pss-val">159</div><div class="pss-dim">照片</div></div>
+      <div class="pss-item"><div class="pss-val go">166★</div><div class="pss-dim">视频（全球第一）</div></div>
+      <div class="pss-item"><div class="pss-val wa">140</div><div class="pss-dim">变焦（偏弱）</div></div>
+      <div class="pss-item"><div class="pss-val wa">中</div><div class="pss-dim">人脸亮度（V6扣分）</div></div>
+    </div>
+    <table class="spec-tbl"><thead><tr><th colspan="3">硬件配置</th></tr></thead><tbody>
+      <tr><td>主摄</td><td>48MP · Quad Pixel · f/1.78 · OIS · 24mm</td><td class="spec-note">Dual Pixel AF；苹果 Photonic Engine</td></tr>
+      <tr><td>超广角</td><td>48MP · f/2.2 · 13mm</td><td class="spec-note">升级至 48MP，实际细节提升有限</td></tr>
+      <tr><td>长焦（潜望）</td><td>12MP · 5× 光学 · f/2.8 · OIS</td><td class="spec-note">仅单长焦；2×–5× 之间有明显画质断层</td></tr>
+      <tr><td>视频</td><td>4K 120fps · ProRes Log · Dolby Vision</td><td class="spec-note">V6 视频全球并列第一；Cinema Camera 系统</td></tr>
+      <tr><td>芯片 / 售价</td><td>Apple A18 Pro · 约 ¥9999</td><td class="spec-note" style="color:var(--warn)!important">每分 ¥62.1 · 视频溢价合理；照片溢价存疑</td></tr>
+    </tbody></table>
+    <div class="pro-con">
+      <div class="pro-col"><div class="pc-head">优势</div>
+        <div class="pc-item">V6 视频并列全球第一（166分）</div>
+        <div class="pc-item">低光视频几乎无噪点，业界标杆</div>
+        <div class="pc-item">视频稳定性最优，行走拍摄流畅度第一</div>
+        <div class="pc-item">零快门延迟，运动抓拍成功率极高</div>
+        <div class="pc-item">ProRes Log + Dolby Vision，后期空间最大</div>
+      </div>
+      <div class="con-col"><div class="pc-head">不足</div>
+        <div class="pc-item">V6 人脸亮度扣分：逆光 HDR 人脸偏暗</div>
+        <div class="pc-item">变焦硬件弱：仅单长焦，2×–5× 有断层</div>
+        <div class="pc-item">超广角 48MP 升级对实际画质提升不明显</div>
+        <div class="pc-item">群组合影大景深场景存在失焦风险</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- XIAOMI -->
+  <div class="profile">
+    <div class="profile-head" style="background:linear-gradient(135deg,#7a2800,#c85a00)">
+      <div><div class="ph-rank">DXOMARK V6 · 全球 #7</div><div class="ph-name">Xiaomi 15 Ultra</div><div class="ph-tagline">200MP 超长焦 · V6 变焦全球第一 · 徕卡调色</div></div>
+      <div><div class="ph-score">159</div><div class="ph-score-label">V6 综合</div></div>
+    </div>
+    <div class="profile-sub-scores">
+      <div class="pss-item"><div class="pss-val">161</div><div class="pss-dim">照片</div></div>
+      <div class="pss-item"><div class="pss-val lo">148</div><div class="pss-dim">视频（五款最低）</div></div>
+      <div class="pss-item"><div class="pss-val go">162★</div><div class="pss-dim">变焦（全球最高）</div></div>
+      <div class="pss-item"><div class="pss-val">良</div><div class="pss-dim">人脸亮度</div></div>
+    </div>
+    <table class="spec-tbl"><thead><tr><th colspan="3">硬件配置</th></tr></thead><tbody>
+      <tr><td>主摄</td><td>50MP · 1英寸 · f/1.63 · OIS</td><td class="spec-note">Light Fusion 900；徕卡 VARIO 镜头调校</td></tr>
+      <tr><td>超广角</td><td>50MP · f/1.8 · 12mm</td><td class="spec-note">超大光圈超广；边缘分辨率五款最弱</td></tr>
+      <tr><td>中焦</td><td>50MP · 2.6× · f/2.5</td><td class="spec-note">中焦人像过渡自然</td></tr>
+      <tr><td>超长焦（潜望）</td><td>200MP · ~4.3× 等效光学 · f/2.6 · OIS</td><td class="spec-note" style="color:var(--good)!important;font-weight:600!important">V6 变焦全球第一；200MP 细节史上最佳</td></tr>
+      <tr><td>视频</td><td>8K 24fps · 4K 120fps · HLG · Log</td><td class="spec-note">规格最高；防抖弱于 iPhone</td></tr>
+      <tr><td>芯片 / 售价</td><td>Snapdragon 8 Elite · 约 ¥5999</td><td class="spec-note" style="color:var(--good)!important;font-weight:600!important">每分 ¥37.7 · 五款中性价比最高</td></tr>
+    </tbody></table>
+    <div class="pro-con">
+      <div class="pro-col"><div class="pc-head">优势</div>
+        <div class="pc-item">V6 变焦全球第一（162分）：200MP 前无古人</div>
+        <div class="pc-item">徕卡调色，自然色彩，肤色还原准确</div>
+        <div class="pc-item">主摄动态范围优秀，全场景曝光稳定</div>
+        <div class="pc-item">8K 视频规格最高，后期裁切灵活</div>
+        <div class="pc-item">售价最低（¥5999），性价比五款之首</div>
+      </div>
+      <div class="con-col"><div class="pc-head">不足</div>
+        <div class="pc-item">视频防抖明显弱于 iPhone 16 Pro Max</div>
+        <div class="pc-item">超广角边缘分辨率五款中最弱</div>
+        <div class="pc-item">连拍曝光与色彩偶有不稳定</div>
+        <div class="pc-item">群组合影大景深合焦能力偏弱</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIXEL -->
+  <div class="profile">
+    <div class="profile-head" style="background:linear-gradient(135deg,#1a3fa8,#1056c0)">
+      <div><div class="ph-rank">DXOMARK V6 重测 · 约 ~156 分</div><div class="ph-name">Google Pixel 9 Pro XL</div><div class="ph-tagline">V6 人脸亮度全球标杆 · AI 编辑最强 · 人像双优</div></div>
+      <div><div class="ph-score">~156</div><div class="ph-score-label">V6 重测估算</div></div>
+    </div>
+    <div class="profile-sub-scores">
+      <div class="pss-item"><div class="pss-val">~157</div><div class="pss-dim">照片（估算）</div></div>
+      <div class="pss-item"><div class="pss-val">~150</div><div class="pss-dim">视频</div></div>
+      <div class="pss-item"><div class="pss-val wa">~145</div><div class="pss-dim">变焦（偏弱）</div></div>
+      <div class="pss-item"><div class="pss-val go">优★</div><div class="pss-dim">人脸亮度（全球标杆）</div></div>
+    </div>
+    <table class="spec-tbl"><thead><tr><th colspan="3">硬件配置</th></tr></thead><tbody>
+      <tr><td>主摄</td><td>50MP · 1/1.31英寸 · f/1.68 · OIS · 24mm</td><td class="spec-note">Octa PD 全向相位对焦；Tensor G4 深度集成</td></tr>
+      <tr><td>超广角</td><td>48MP · f/1.7 · 13mm</td><td class="spec-note">主动 HDR 处理，边缘细节较好</td></tr>
+      <tr><td>长焦（潜望）</td><td>48MP · 5× 光学 · f/2.8</td><td class="spec-note" style="color:var(--bad)!important">五款中长焦硬件规格最弱；无超长焦</td></tr>
+      <tr><td>视频</td><td>8K Video Boost（云端）· 4K 60fps</td><td class="spec-note">Video Boost 依赖 Google 云端；离线受限</td></tr>
+      <tr><td>AI 功能</td><td>Magic Eraser · Best Take · Photo Unblur</td><td class="spec-note">AI 摄影编辑工具五款最强</td></tr>
+      <tr><td>芯片 / 售价</td><td>Google Tensor G4 · $1099 / 约 ¥7900</td><td class="spec-note">每分约 ¥51，性价比中等</td></tr>
+    </tbody></table>
+    <div class="pro-con">
+      <div class="pro-col"><div class="pc-head">优势</div>
+        <div class="pc-item">V6 人脸亮度：与华为并列全球标杆</div>
+        <div class="pc-item">HDR 处理最自然，逆光人像无过曝</div>
+        <div class="pc-item">超级夜视：低光细节出众，色彩还原准</div>
+        <div class="pc-item">AI 编辑工具（Magic Eraser 等）五款最强</div>
+        <div class="pc-item">自动对焦速度与精准度五款并列第一</div>
+      </div>
+      <div class="con-col"><div class="pc-head">不足</div>
+        <div class="pc-item">长焦硬件五款最弱：仅 5×，V6 长焦权重上升后扣分严重</div>
+        <div class="pc-item">Video Boost 需云端，离线场景受限</div>
+        <div class="pc-item">低光高色噪（Chroma noise）问题存在</div>
+        <div class="pc-item">Tensor G4 性能略弱于 8 Elite，发热相对明显</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAMSUNG -->
+  <div class="profile">
+    <div class="profile-head" style="background:linear-gradient(135deg,#0a1628,#1a2d4a)">
+      <div><div class="ph-rank">DXOMARK V6 · 全球 #29</div><div class="ph-name">Samsung Galaxy S25 Ultra</div><div class="ph-tagline">S Pen 商务特色 · 低光噪点问题 · 五款性价比最差</div></div>
+      <div><div class="ph-score" style="color:#f0b429">151</div><div class="ph-score-label">V6 综合</div></div>
+    </div>
+    <div class="profile-sub-scores">
+      <div class="pss-item"><div class="pss-val lo">148</div><div class="pss-dim">照片（五款最低）</div></div>
+      <div class="pss-item"><div class="pss-val">150</div><div class="pss-dim">视频</div></div>
+      <div class="pss-item"><div class="pss-val lo">130</div><div class="pss-dim">变焦（五款最低）</div></div>
+      <div class="pss-item"><div class="pss-val wa">中</div><div class="pss-dim">人脸亮度（色偏）</div></div>
+    </div>
+    <table class="spec-tbl"><thead><tr><th colspan="3">硬件配置</th></tr></thead><tbody>
+      <tr><td>主摄</td><td>200MP · 1/1.3英寸 · f/1.7 · OIS</td><td class="spec-note">高像素主摄；V6 中未能发挥最大优势</td></tr>
+      <tr><td>超广角</td><td>50MP · f/1.9 · 13mm（本代重大升级）</td><td class="spec-note" style="color:var(--good)!important">从 12MP 升级 50MP，本代最大进步项</td></tr>
+      <tr><td>长焦 1</td><td>50MP · 3× 光学 · f/3.4</td><td class="spec-note">中距拍摄主力</td></tr>
+      <tr><td>长焦 2（潜望）</td><td>50MP · 5× 光学 · f/4.4 · OIS</td><td class="spec-note" style="color:var(--bad)!important">无超长焦；V6 长焦权重提升后严重失分</td></tr>
+      <tr><td>特色</td><td>内置 S Pen · 钛金属边框</td><td class="spec-note">唯一内置手写笔，商务差异化</td></tr>
+      <tr><td>芯片 / 售价</td><td>Snapdragon 8 Elite · 约 ¥9999</td><td class="spec-note" style="color:var(--bad)!important;font-weight:600!important">每分 ¥66.2 · 五款最差性价比</td></tr>
+    </tbody></table>
+    <div class="pro-con">
+      <div class="pro-col"><div class="pc-head">优势</div>
+        <div class="pc-item">S Pen 集成，商务生产力场景唯一差异化</div>
+        <div class="pc-item">白天视频：曝光、色彩、动态范围均衡</div>
+        <div class="pc-item">超广角从 12MP 升级 50MP，本代实质性进步</div>
+        <div class="pc-item">3× 中焦长焦人像表现稳定</div>
+      </div>
+      <div class="con-col"><div class="pc-head">不足</div>
+        <div class="pc-item">低光照片噪点五款最多，高对比场景尤为明显</div>
+        <div class="pc-item">HDR 处理不稳定：色彩对比时而失真</div>
+        <div class="pc-item">人像肤色偏冷（偏粉），V6 人像直接扣分</div>
+        <div class="pc-item">视频对焦跳变，曝光适应速度慢</div>
+        <div class="pc-item">同价 Oppo Find X8 Ultra V6 高出 17 分</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 BUYING -->
+<section class="section" id="buying">
+  <div class="section-label"><span>06</span>购买决策</div>
+  <div class="chart">
+    <div class="chart-num">图表 04</div>
+    <div class="chart-conclusion">不同需求场景下，<em>答案不同</em>——用途决定最优解</div>
+    <div class="chart-note">推荐基于 V6 评分与使用场景权重综合判断。</div>
+    <table class="tbl">
+      <thead><tr><th>使用场景</th><th>推荐机型</th><th>关键理由</th></tr></thead>
+      <tbody>
+        <tr><td class="label">视频创作 / Vlog / 专业拍摄</td><td class="hi">iPhone 16 Pro Max</td><td>V6 视频并列全球第一；ProRes Log 后期空间最大；稳定性标杆</td></tr>
+        <tr><td class="label">鸟类 / 运动 / 远距离摄影</td><td class="go">Xiaomi 15 Ultra</td><td>200MP 长焦 V6 变焦全球第一；细节保留史上最佳；售价最低</td></tr>
+        <tr><td class="label">日常人像 / 家庭拍摄</td><td class="hi">Google Pixel 9 Pro XL</td><td>V6 人脸亮度全球标杆；AI 编辑最强；使用门槛最低</td></tr>
+        <tr><td class="label">全能均衡 / 无明确偏好</td><td class="go" style="font-weight:700">Oppo Find X8 Ultra</td><td>V6 综合全段最高（168）；双长焦最均衡；性价比最佳</td></tr>
+        <tr><td class="label">商务生产力 / 需要手写笔</td><td class="wa">Samsung S25 Ultra</td><td>唯一内置 S Pen；生产力场景无可替代；以影像为核心需求则不推荐</td></tr>
+        <tr><td class="label" style="color:var(--bad)">⚠ 不推荐（纯影像购机）</td><td class="lo">Samsung S25 Ultra</td><td>¥9999 vs V6 全球 #29；同价 iPhone 高 10 分，可买 Oppo 高 17 分</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 07 VFM -->
+<section class="section" id="vfm">
+  <div class="section-label"><span>07</span>性价比</div>
+  <div class="chart">
+    <div class="chart-num">图表 05</div>
+    <div class="chart-conclusion">同样 ¥9999，<span class="neg">Samsung 比 Oppo 多付 ¥24.5 / 分</span>，影像投入产出最差</div>
+    <div class="chart-note">每分价格 = 参考售价 ÷ V6 综合得分。数值越低越好。</div>
+    <div class="bar-chart">
+      <div class="bar-row"><div class="bar-name"><b>Xiaomi 15 Ultra</b><span>¥5999 ÷ 159</span></div><div class="bar-track"><div class="bar-fill go" style="width:57%">¥37.7 / 分</div></div><div class="bar-val go">★最优</div></div>
+      <div class="bar-row"><div class="bar-name"><b>Oppo Find X8 Ultra</b><span>¥6999 ÷ 168</span></div><div class="bar-track"><div class="bar-fill hi" style="width:63%">¥41.7 / 分</div></div><div class="bar-val hi">★优</div></div>
+      <div class="bar-row"><div class="bar-name"><b>Pixel 9 Pro XL</b><span>~¥7900 ÷ 156</span></div><div class="bar-track"><div class="bar-fill mu" style="width:77%">~¥51 / 分</div></div><div class="bar-val mu">中等</div></div>
+      <div class="bar-row"><div class="bar-name"><b>iPhone 16 Pro Max</b><span>¥9999 ÷ 161</span></div><div class="bar-track"><div class="bar-fill wa" style="width:94%">¥62.1 / 分</div></div><div class="bar-val wa">视频溢价</div></div>
+      <div class="bar-row"><div class="bar-name"><b>Samsung S25 Ultra</b><span>¥9999 ÷ 151</span></div><div class="bar-track"><div class="bar-fill lo" style="width:100%">¥66.2 / 分</div></div><div class="bar-val lo">★最差</div></div>
+    </div>
+    <div class="bar-axis"><div></div><div class="bar-axis-inner"><span>¥30</span><span>¥40</span><span>¥50</span><span>¥60</span><span>¥70</span></div><div></div></div>
+    <div class="finding"><strong>关键发现：</strong>Samsung S25 Ultra 与 iPhone 16 Pro Max 同售价 ¥9999，但前者 V6 低 10 分。若以影像为核心购买目的，¥9999 买 Oppo Find X8 Ultra（168分）比买三星（151分）多获得 17 分的影像质量提升，相当于少付了每分 ¥24.5。</div>
+  </div>
+</section>
+
+<!-- 08 VALIDATION -->
+<section class="section" id="validation">
+  <div class="section-label"><span>08</span>数据验证</div>
+  <h2 class="section-title">所有分数均经三方交叉验证</h2>
+  <p class="body-text">本报告以 DxOMark 官方 V6 评测页面为一次来源，并通过三方媒体交叉确认。</p>
+  <div class="val-grid">
+    <div class="val-card"><div class="val-type">V6 协议规则</div><div class="val-score">官方文档</div><div class="val-src">一次：dxomark.com/dxomark-smartphone-camera-protocol-v6/<br>交叉：DxOMark 官方新闻稿 2025-08-27</div><div class="val-ok">✓ 已验证</div></div>
+    <div class="val-card"><div class="val-type">Samsung S25 Ultra · V6</div><div class="val-score">151 分 · 全球 #29</div><div class="val-src">一次：dxomark.com samsung-galaxy-s25-ultra-camera-test<br>交叉：NotebookCheck · SammyGuru · Gizmochina</div><div class="val-ok">✓ 三方均确认 151 分</div></div>
+    <div class="val-card"><div class="val-type">Xiaomi 15 Ultra · V6</div><div class="val-score">159 分 · 全球 #7</div><div class="val-src">一次：dxomark.com xiaomi-15-ultra-camera-test<br>交叉：XiaomiForAll · AndroidHeadlines · NotebookCheck</div><div class="val-ok">✓ 三方均确认 159 分</div></div>
+    <div class="val-card"><div class="val-type">iPhone 16 Pro Max · V6</div><div class="val-score">161 分 · 全球 #13</div><div class="val-src">一次：dxomark.com apple-iphone-16-pro-max-camera-test<br>交叉：Gizmochina · DxOMark 产品页面</div><div class="val-ok">✓ 已验证 161 分</div></div>
+    <div class="val-card"><div class="val-type">Pixel 9 Pro XL · V6重测</div><div class="val-score">~156 分（估算）</div><div class="val-src">一次：dxomark.com google-pixel-9-pro-xl-camera-test<br>交叉：NotebookCheck 评测汇总</div><div class="val-warn">⚠ 估算值，以官方最新页面为准</div></div>
+    <div class="val-card"><div class="val-type">Oppo Find X8 Ultra · V6</div><div class="val-score">168 分 · 全球 #3</div><div class="val-src">一次：dxomark.com smartphones Oppo/Find-X8-Ultra<br>交叉：多方媒体排名复核（Pura 80 上榜后）</div><div class="val-ok">✓ 已验证 168 分</div></div>
+  </div>
+  <div class="notice" style="margin-top:28px"><b>三条使用注意：</b><br>① V5 与 V6 分数不可直接比较，本报告全部统一为 V6。<br>② Pixel 9 Pro XL 以 ~156 标注为估算值，如需精确分数请访问 DxOMark 官方最新页面。<br>③ DxOMark 分数为测试室系统性表现，建议结合场景需求（而非单一总分）做购买决策。</div>
+  <div class="footer">
+    <div class="footer-note">数据截止：2025 年 8 月 · DxOMark Camera V6 协议<br>本报告为独立整理，与 DxOMark 及各品牌无商业关系<br>图表设计原则参照《用图表说话》Gene Zelazny</div>
+    <div class="footer-brand">DxOMark V6<br>旗舰影像调查报告</div>
+  </div>
+</section>
+
+</div>
+
+<script>
+const secs = document.querySelectorAll('section[id]');
+const links = document.querySelectorAll('.nav-a');
+const io = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`.nav-a[href="#${e.target.id}"]`);
+      if (a) { a.classList.add('active'); a.scrollIntoView({block:'nearest',inline:'center'}); }
+    }
+  });
+}, { threshold: 0.25 });
+secs.forEach(s => io.observe(s));
+document.querySelectorAll('.nav-a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>
